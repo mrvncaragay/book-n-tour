@@ -6,6 +6,8 @@ const userRoute = require('./routes/userRoutes');
 
 const app = express();
 
+app.enable('trust proxy');
+
 // Parse incoming request with json and urlencoded payload
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -19,5 +21,5 @@ app.use('/api/users', userRoute);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
-  console.log(`listening to port ${port}`);
+  console.log(`listening to port ${port}...`);
 });
