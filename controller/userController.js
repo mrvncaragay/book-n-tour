@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const gravatar = require('gravatar');
 const User = require('../model/user');
 
@@ -9,8 +10,24 @@ exports.getAllUsers = (req, res) => {
   res.json('Hellow');
 };
 
-exports.createUser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: 'error', message: 'This route is not yet defined!' });
+exports.createUser = async (req, res) => {
+  const { name, password, email } = req.body;
+
+  const avatar = gravatar.url(email, { s: '200', r: 'pg', d: 'mp' });
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const user = new User({
+    name,
+    password: hashedPassword,
+    email,
+    avatar
+  });
+
+  await user.save();
+
+  res.json({
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar
+  });
 };

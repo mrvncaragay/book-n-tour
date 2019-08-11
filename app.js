@@ -1,4 +1,6 @@
 require('dotenv').config();
+// Handle async errors
+require('express-async-errors');
 const express = require('express');
 const morgan = require('morgan');
 
