@@ -1,7 +1,7 @@
 {
-  "name": "book-n-tour",
+  "name": "softdev",
   "version": "1.0.0",
-  "description": "web app that lets you book a tour.",
+  "description": "Web apps that connect developers.",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",

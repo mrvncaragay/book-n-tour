@@ -1,5 +1,8 @@
 const User = require('../model/user');
 
+// @route   GET /api/users
+// @desc    Get a all users
+// @access  Public
 exports.getAllUsers = (req, res) => {
   res
     .status(500)

@@ -5,7 +5,7 @@ mongoose.set('useCreateIndex', true); //index deprecated warning
 mongoose.set('useNewUrlParser', true); //URL deprecated warning
 
 mongoose
-  .connect(process.env.DB)
+  .connect(process.env.LOCALDB)
   .then(() => console.log('DB successfully connected...'))
   .catch(err => console.log('Connect connect to DB...', err));
 
