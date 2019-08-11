@@ -4,6 +4,7 @@ require('express-async-errors');
 const express = require('express');
 const morgan = require('morgan');
 
+const authRoute = require('./routes//authRoutes');
 const userRoute = require('./routes/userRoutes');
 
 const app = express();
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
+app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 
 const port = process.env.PORT || 8080;

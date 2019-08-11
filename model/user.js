@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
 const mongoose = require('../db');
 
 const userSchema = new mongoose.Schema(
@@ -22,7 +23,9 @@ const userSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
-      required: true
+      default: function() {
+        return gravatar.url(this.email, { s: '200', r: 'pg', d: 'mp' });
+      }
     }
   },
   {
