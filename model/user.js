@@ -38,9 +38,10 @@ userSchema.set('toObject', { virtuals: true });
 
 // Virtuals
 userSchema.virtual('jwtToken').get(function() {
-  const { name, email, avatar } = this;
+  const { _id: id, name, email, avatar } = this;
   return jwt.sign(
     {
+      id,
       name,
       email,
       avatar

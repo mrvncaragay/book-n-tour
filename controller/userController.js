@@ -1,6 +1,13 @@
 const bcrypt = require('bcrypt');
 const User = require('../model/user');
 
+// @route   GET /api/users/me
+// @desc    Get current user
+// @access  Private
+exports.current = (req, res) => {
+  res.json(req.user);
+};
+
 // @route   GET /api/users
 // @desc    Get a all users
 // @access  Public
@@ -11,7 +18,7 @@ exports.getAllUsers = (req, res) => {
 // @route   POST /api/users
 // @desc    create a new user in the DB
 // @access  Public
-exports.createUser = async (req, res) => {
+exports.create = async (req, res) => {
   const { name, password, email } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -33,4 +40,4 @@ exports.createUser = async (req, res) => {
 // @route   PUT /api/users
 // @desc    update user info
 // @access  private
-exports.updateUser = (req, res) => {};
+exports.update = (req, res) => {};
