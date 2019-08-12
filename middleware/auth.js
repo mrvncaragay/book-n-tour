@@ -14,7 +14,7 @@ const validate = user => {
       .required()
   };
 
-  return Joi.validate(user, schema);
+  return Joi.validate(user, schema, { abortEarly: false });
 };
 
 exports.isBodyValid = (req, res, next) => {

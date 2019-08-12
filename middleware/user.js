@@ -18,12 +18,11 @@ const validate = user => {
       .required()
   };
 
-  return Joi.validate(user, schema);
+  return Joi.validate(user, schema, { abortEarly: false });
 };
 
 exports.isBodyValid = (req, res, next) => {
   const { error } = validate(req.body);
-
   return error ? res.status(400).send(error.details[0].message) : next();
 };
 
