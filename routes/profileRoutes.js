@@ -8,6 +8,7 @@ const {
   removeEducation,
   profileById,
   profileByHandle,
+  remove,
   create
 } = require('../controller/profileController');
 const { isJwtValid } = require('../middleware/auth');
@@ -26,9 +27,9 @@ router.put('/me/experience', isJwtValid, isValidExperience, experience);
 router.put('/me/experience/:id', isJwtValid, removeExperience);
 router.put('/me/education', isJwtValid, isValidEducation, education);
 router.put('/me/education/:id', isJwtValid, removeEducation);
-
 router.get('/user/:id', profileById);
 router.get('/handle/:handle', profileByHandle);
 router.post('/', isJwtValid, hasProfile, isBodyValid, create);
+router.delete('/', isJwtValid, remove);
 
 module.exports = router;
