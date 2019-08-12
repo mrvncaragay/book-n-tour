@@ -6,6 +6,7 @@ const morgan = require('morgan');
 
 const authRoute = require('./routes//authRoutes');
 const userRoute = require('./routes/userRoutes');
+const profileRoute = require('./routes/profileRoutes');
 
 const app = express();
 
@@ -21,7 +22,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.use('/api/auth', authRoute);
-app.use('/api/users', userRoute);
+app.use('/api', userRoute);
+app.use('/api', profileRoute);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

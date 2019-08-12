@@ -11,8 +11,9 @@ exports.current = (req, res) => {
 // @route   GET /api/users
 // @desc    Get a all users
 // @access  Public
-exports.getAllUsers = (req, res) => {
-  res.json('Hellow');
+exports.getAllUsers = async (req, res) => {
+  const users = await User.find();
+  res.json(users);
 };
 
 // @route   POST /api/users
@@ -36,8 +37,3 @@ exports.create = async (req, res) => {
     avatar: user.avatar
   });
 };
-
-// @route   PUT /api/users
-// @desc    update user info
-// @access  private
-exports.update = (req, res) => {};
