@@ -10,8 +10,8 @@ const { isBodyValid, isEmailTaken } = require('../middleware/user');
 
 const router = express.Router();
 
-router.get('/user/me', isJwtValid, current);
-router.get('/users', getAllUsers);
-router.post('/users', isBodyValid, isEmailTaken, create);
+router.get('/me', isJwtValid, current);
+router.get('/', getAllUsers);
+router.post('/', isBodyValid, isEmailTaken, create);
 
 module.exports = router;

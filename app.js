@@ -22,8 +22,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.use('/api/auth', authRoute);
-app.use('/api', userRoute);
-app.use('/api', profileRoute);
+app.use('/api/users', userRoute);
+app.use('/api/profile', profileRoute);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
