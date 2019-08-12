@@ -3,6 +3,7 @@ require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
 
 const authRoute = require('./routes//authRoutes');
 const userRoute = require('./routes/userRoutes');

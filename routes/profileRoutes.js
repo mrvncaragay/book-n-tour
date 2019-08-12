@@ -11,7 +11,7 @@ const {
   remove,
   create
 } = require('../controller/profileController');
-const { isJwtValid } = require('../middleware/auth');
+const { isJwtValid, isObjectIdValid } = require('../middleware/auth');
 const {
   hasProfile,
   isBodyValid,
@@ -21,6 +21,7 @@ const {
 
 const router = express.Router();
 
+router.param('id', isObjectIdValid);
 router
   .route('/')
   .get(profiles)

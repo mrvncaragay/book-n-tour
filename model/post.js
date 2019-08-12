@@ -13,13 +13,11 @@ const postSchema = new mongoose.Schema(
     },
 
     name: {
-      type: String,
-      default: this.user.name
+      type: String
     },
 
     avatar: {
-      type: String,
-      default: this.user.avatar
+      type: String
     },
 
     likes: [
