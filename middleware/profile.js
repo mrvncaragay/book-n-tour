@@ -32,6 +32,34 @@ const validate = profile => {
   return Joi.validate(profile, schema, { abortEarly: false });
 };
 
+const validateExperience = experience => {
+  const schema = {
+    title: Joi.string().required(),
+    company: Joi.string().required(),
+    location: Joi.string(),
+    from: Joi.date().required(),
+    to: Joi.date(),
+    current: Joi.boolean(),
+    description: Joi.string()
+  };
+
+  return Joi.validate(experience, schema, { abortEarly: false });
+};
+
+const validateEducation = education => {
+  const schema = {
+    school: Joi.string().required(),
+    degree: Joi.string().required(),
+    filedOfStudy: Joi.string().required(),
+    from: Joi.date().required(),
+    to: Joi.date(),
+    current: Joi.boolean(),
+    description: Joi.string()
+  };
+
+  return Joi.validate(education, schema, { abortEarly: false });
+};
+
 exports.hasProfile = async (req, res, next) => {
   const { id } = req.user;
 
@@ -49,5 +77,15 @@ exports.isBodyValid = (req, res, next) => {
   // }));
 
   //const eMsgs = error.details.map(({ message }) => message);
+  return error ? res.status(400).send(error.details[0].message) : next();
+};
+
+exports.isValidExperience = (req, res, next) => {
+  const { error } = validateExperience(req.body);
+  return error ? res.status(400).send(error.details[0].message) : next();
+};
+
+exports.isValidEducation = (req, res, next) => {
+  const { error } = validateEducation(req.body);
   return error ? res.status(400).send(error.details[0].message) : next();
 };
