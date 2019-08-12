@@ -21,15 +21,18 @@ const {
 
 const router = express.Router();
 
-router.get('/', profiles);
+router
+  .route('/')
+  .get(profiles)
+  .post(isJwtValid, hasProfile, isBodyValid, create)
+  .delete(isJwtValid, remove);
+
 router.get('/me', isJwtValid, profile);
+router.get('/user/:id', profileById);
+router.get('/handle/:handle', profileByHandle);
 router.put('/me/experience', isJwtValid, isValidExperience, experience);
 router.put('/me/experience/:id', isJwtValid, removeExperience);
 router.put('/me/education', isJwtValid, isValidEducation, education);
 router.put('/me/education/:id', isJwtValid, removeEducation);
-router.get('/user/:id', profileById);
-router.get('/handle/:handle', profileByHandle);
-router.post('/', isJwtValid, hasProfile, isBodyValid, create);
-router.delete('/', isJwtValid, remove);
 
 module.exports = router;
