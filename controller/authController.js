@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require('../model/user');
 
 // @route   POST /api/auth/login
+// @pre     Execute in order: isBodyValid
 // @desc    Authenticate user
 // @access  PUBLIC
 exports.login = async (req, res) => {

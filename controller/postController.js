@@ -1,6 +1,7 @@
 const Post = require('../model/post');
 
 // @route   GET /api/posts/:id
+// @pre     Execute in order: isObjectIdValid, isPostExist
 // @desc    Get a single post
 // @access  Public
 exports.post = async (req, res) => {
@@ -8,6 +9,7 @@ exports.post = async (req, res) => {
 };
 
 // @route   GET /api/posts
+// @pre     Execute in order:
 // @desc    Get all posts
 // @access  Public
 exports.posts = async (req, res) => {
@@ -17,6 +19,7 @@ exports.posts = async (req, res) => {
 };
 
 // @route   POST /api/posts
+// @pre     Execute in order: isJwtValid, isBodyValid
 // @desc    Create post
 // @access  Private
 exports.create = async (req, res) => {
@@ -30,6 +33,7 @@ exports.create = async (req, res) => {
 };
 
 // @route   DELETE /api/posts/:id
+// @pre     Execute in order: isObjectIdValid, isPostExist and isPostOwner
 // @desc    Delete post
 // @access  Private
 exports.remove = async (req, res) => {
@@ -38,6 +42,7 @@ exports.remove = async (req, res) => {
 };
 
 // @route   PUT /api/posts/like/:id
+// @pre     Execute in order: isObjectIdValid, isPostExist and isJwtValid
 // @desc    Like a post
 // @access  Private
 exports.like = async (req, res) => {
@@ -48,9 +53,8 @@ exports.like = async (req, res) => {
   res.json({ likes: post.user });
 };
 
-// Decided whethere you want to do this....
-
 // @route   PUT /api/posts/unlike/:id
+// @pre     Execute in order: isObjectIdValid, isPostExist and isJwtValid
 // @desc    Unlike a post
 // @access  Private
 exports.unlike = async (req, res) => {
@@ -62,6 +66,7 @@ exports.unlike = async (req, res) => {
 };
 
 // @route   PUT /api/posts/comment/:id
+// @pre     Execute in order: isObjectIdValid, isPostExist and isJwtValid
 // @desc    Create a comment
 // @access  Private
 exports.comment = async (req, res) => {
@@ -80,6 +85,7 @@ exports.comment = async (req, res) => {
 };
 
 // @route   PUT /api/posts/uncomment/:id/:commentId
+// @pre     Execute in order: isObjectIdValid, isPostExist and isJwtValid
 // @desc    Remove a comment
 // @access  Private
 exports.uncomment = async (req, res) => {

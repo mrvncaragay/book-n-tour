@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require('../model/user');
 
 // @route   GET /api/users
+// @pre     Execute in order:
 // @desc    Get a all users
 // @access  Public
 exports.getAllUsers = async (req, res) => {
@@ -10,6 +11,7 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // @route   POST /api/users
+// @pre     Execute in order: isBodyValid, isEmailTaken
 // @desc    create a new user in the DB
 // @access  Public
 exports.create = async (req, res) => {
