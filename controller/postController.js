@@ -39,9 +39,6 @@ exports.create = async (req, res) => {
 // @access  Private
 exports.remove = async (req, res) => {
   const post = await Post.findByIdAndDelete(req.params.id);
-  if (!post)
-    return res.status(404).json('The post with the given ID was not found.');
-
   res.json(post);
 };
 
@@ -56,8 +53,6 @@ exports.like = async (req, res) => {
     },
     { new: true }
   ).select('likes -_id');
-  if (!likes)
-    return res.status(404).json('The post with the given ID was not found.');
 
   res.json(likes);
 };
@@ -73,8 +68,6 @@ exports.unlike = async (req, res) => {
     },
     { new: true }
   ).select('likes -_id');
-  if (!likes)
-    return res.status(404).json('The post with the given ID was not found.');
 
   res.json(likes);
 };
@@ -98,8 +91,6 @@ exports.comment = async (req, res) => {
     },
     { new: true }
   ).select('comments -_id');
-  if (!comments)
-    return res.status(404).json('The post with the given ID was not found.');
 
   res.json(comments);
 };
@@ -115,8 +106,6 @@ exports.uncomment = async (req, res) => {
     },
     { new: true }
   ).select('comments -_id');
-  if (!comments)
-    return res.status(404).json('The post with the given ID was not found.');
 
   res.json(comments);
 };

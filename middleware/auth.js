@@ -51,7 +51,9 @@ exports.isJwtValid = (req, res, next) => {
 exports.isObjectIdValid = (req, res, next) => {
   for (const key in req.params) {
     if (!mongoose.Types.ObjectId.isValid(req.params[key]))
-      return res.status(404).send('Invalid Id.');
+      return res
+        .status(404)
+        .json(`The post with the given ${key} was not found.`);
   }
 
   next();

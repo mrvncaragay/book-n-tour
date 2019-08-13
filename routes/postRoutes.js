@@ -14,6 +14,7 @@ const { isBodyValid, isPostOwner } = require('../middleware/post');
 
 const router = express();
 
+// check all route that has parameter /:id or mongoose id is valid
 router.param('id', isObjectIdValid);
 router
   .route('/')
