@@ -1,13 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../model/user');
 
-// @route   GET /api/users/me
-// @desc    Get current user
-// @access  Private
-exports.current = (req, res) => {
-  res.json(req.user);
-};
-
 // @route   GET /api/users
 // @desc    Get a all users
 // @access  Public

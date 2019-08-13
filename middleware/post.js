@@ -10,20 +10,6 @@ const validate = post => {
       .required(),
     name: Joi.string(),
     avatar: Joi.string()
-    // likes: Joi.array().items(
-    //   Joi.object({
-    //     user: Joi.string()
-    //   })
-    // ),
-    // comments: Joi.array().items(
-    //   Joi.object({
-    //     user: Joi.string(),
-    //     text: Joi.string().required(),
-    //     name: Joi.string(),
-    //     avatar: Joi.string(),
-    //     date: Joi.date()
-    //   })
-    // )
   };
 
   return Joi.validate(post, schema, { abortEarly: false });
@@ -34,10 +20,20 @@ exports.isBodyValid = (req, res, next) => {
   return error ? res.status(400).send(error.details[0].message) : next();
 };
 
-exports.isPostOwner = async (req, res, next) => {
+exports.isPostExist = async (req, res, next) => {
   const post = await Post.findById(req.params.id);
+  // Check if we found a post
+  if (!post)
+    return res.status(404).json(`The post with the given id was not found.`);
 
-  if (post.user.toString() !== req.user.id)
+  // Save post reference to req.post
+  req.post = post;
+  next();
+};
+
+exports.isPostOwner = (req, res, next) => {
+  // Check if method is DELETE and the current user is the owner
+  if (req.post.user.toString() !== req.user.id)
     return res.status(401).json({ error: 'User not authorized' });
 
   next();

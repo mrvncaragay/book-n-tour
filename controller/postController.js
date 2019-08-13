@@ -1,13 +1,10 @@
 const Post = require('../model/post');
 
-// @route   GET /api/posts
+// @route   GET /api/posts/:id
 // @desc    Get a single post
 // @access  Public
 exports.post = async (req, res) => {
-  const post = await Post.findById(req.params.id);
-  if (!post)
-    return res.status(404).json('The post with the given ID was not found.');
-  res.json(post);
+  res.json(req.post);
 };
 
 // @route   GET /api/posts
@@ -23,10 +20,8 @@ exports.posts = async (req, res) => {
 // @desc    Create post
 // @access  Private
 exports.create = async (req, res) => {
-  const { id } = req.user;
-
   let post = new Post({
-    user: id,
+    user: req.user.id,
     ...req.body
   });
 
@@ -38,74 +33,59 @@ exports.create = async (req, res) => {
 // @desc    Delete post
 // @access  Private
 exports.remove = async (req, res) => {
-  const post = await Post.findByIdAndDelete(req.params.id);
-  res.json(post);
+  req.post.remove();
+  res.json(req.post);
 };
 
 // @route   PUT /api/posts/like/:id
 // @desc    Like a post
 // @access  Private
 exports.like = async (req, res) => {
-  const likes = await Post.findByIdAndUpdate(
-    req.params.id,
-    {
-      $addToSet: { likes: req.user.id }
-    },
-    { new: true }
-  ).select('likes -_id');
+  let { post } = req;
 
-  res.json(likes);
+  post.likes.addToSet(req.user.id);
+  post = await post.save();
+  res.json({ likes: post.user });
 };
+
+// Decided whethere you want to do this....
 
 // @route   PUT /api/posts/unlike/:id
 // @desc    Unlike a post
 // @access  Private
 exports.unlike = async (req, res) => {
-  const likes = await Post.findByIdAndUpdate(
-    req.params.id,
-    {
-      $pull: { likes: req.user.id }
-    },
-    { new: true }
-  ).select('likes -_id');
+  let { post } = req;
 
-  res.json(likes);
+  post.likes.pull(req.user.id);
+  post = await post.save();
+  res.json({ likes: post.user });
 };
 
 // @route   PUT /api/posts/comment/:id
 // @desc    Create a comment
 // @access  Private
 exports.comment = async (req, res) => {
+  let { post } = req;
   const { id: userId, avatar, name } = req.user;
-  const comments = await Post.findByIdAndUpdate(
-    req.params.id,
-    {
-      $push: {
-        comments: {
-          user: userId,
-          name,
-          avatar,
-          text: req.body.text
-        }
-      }
-    },
-    { new: true }
-  ).select('comments -_id');
 
-  res.json(comments);
+  post.comments.push({
+    user: userId,
+    name,
+    avatar,
+    text: req.body.text
+  });
+
+  post = await post.save();
+  res.json({ comments: post.comments });
 };
 
 // @route   PUT /api/posts/uncomment/:id/:commentId
 // @desc    Remove a comment
 // @access  Private
 exports.uncomment = async (req, res) => {
-  const comments = await Post.findByIdAndUpdate(
-    req.params.id,
-    {
-      $pull: { comments: { _id: req.params.commentId } }
-    },
-    { new: true }
-  ).select('comments -_id');
+  let { post } = req;
 
-  res.json(comments);
+  post.comments.pull({ _id: req.params.commentId });
+  post = await post.save();
+  res.json({ comments: post.comments });
 };

@@ -3,7 +3,6 @@ require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
 
 const authRoute = require('./routes//authRoutes');
 const userRoute = require('./routes/userRoutes');
@@ -27,6 +26,10 @@ app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/profile', profileRoute);
 app.use('/api/posts', postRoute);
+
+app.use((err, req, res, next) => {
+  res.status(500).json(`${err}`);
+});
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
