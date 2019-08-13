@@ -23,7 +23,9 @@ const validate = user => {
 
 exports.isBodyValid = (req, res, next) => {
   const { error } = validate(req.body);
-  return error ? res.status(400).send(error.details[0].message) : next();
+  return error
+    ? res.status(400).json({ error: error.details[0].message })
+    : next();
 };
 
 exports.isEmailTaken = async (req, res, next) => {
@@ -31,7 +33,7 @@ exports.isEmailTaken = async (req, res, next) => {
 
   // Check if user email exists
   const user = await User.findOne({ email });
-  if (user) return res.status(400).send('User already registered.');
+  if (user) return res.status(400).json({ error: 'User already registered.' });
 
   next();
 };

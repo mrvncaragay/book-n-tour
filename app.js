@@ -24,7 +24,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
-app.use('/api/profile', profileRoute);
+app.use('/api/profiles', profileRoute);
 app.use('/api/posts', postRoute);
 
 app.use((err, req, res, next) => {

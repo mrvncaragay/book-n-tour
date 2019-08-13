@@ -17,14 +17,18 @@ const validate = post => {
 
 exports.isBodyValid = (req, res, next) => {
   const { error } = validate(req.body);
-  return error ? res.status(400).send(error.details[0].message) : next();
+  return error
+    ? res.status(400).json({ error: error.details[0].message })
+    : next();
 };
 
 exports.isPostExist = async (req, res, next) => {
   const post = await Post.findById(req.params.id);
   // Check if we found a post
   if (!post)
-    return res.status(404).json(`The post with the given id was not found.`);
+    return res
+      .status(404)
+      .json({ error: `The post with the given id was not found.` });
 
   // Save post reference to req.post
   req.post = post;

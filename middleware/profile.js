@@ -60,32 +60,47 @@ const validateEducation = education => {
   return Joi.validate(education, schema, { abortEarly: false });
 };
 
-exports.hasProfile = async (req, res, next) => {
-  const { id } = req.user;
-
-  const profile = await Profile.findOne({ user: id });
-  if (profile)
-    return res.status(400).send('Profile for this user already exists.');
-
-  next();
-};
-
 exports.isBodyValid = (req, res, next) => {
   const { error } = validate(req.body);
-  // const eMsgs = error.details.map(({ message, context }) => ({
-  //   [context.key]: message
-  // }));
-
-  //const eMsgs = error.details.map(({ message }) => message);
-  return error ? res.status(400).send(error.details[0].message) : next();
+  return error
+    ? res.status(400).json({ error: error.details[0].message })
+    : next();
 };
 
 exports.isValidExperience = (req, res, next) => {
   const { error } = validateExperience(req.body);
-  return error ? res.status(400).send(error.details[0].message) : next();
+  return error
+    ? res.status(400).json({ error: error.details[0].message })
+    : next();
 };
 
 exports.isValidEducation = (req, res, next) => {
   const { error } = validateEducation(req.body);
-  return error ? res.status(400).send(error.details[0].message) : next();
+  return error
+    ? res.status(400).json({ error: error.details[0].message })
+    : next();
+};
+
+exports.isProfileExist = async (req, res, next) => {
+  const profile = await Profile.findOne({ user: req.user.id }).populate(
+    'User',
+    'avatar name _id -_id'
+  );
+  // Check if we found a profile
+  if (!profile)
+    return res
+      .status(404)
+      .json({ error: `The profile with the given id was not found.` });
+
+  // Save post reference to req.post
+  req.profile = profile;
+  next();
+};
+
+exports.isProfileOwner = (req, res, next) => {
+  // Check if method is DELETE and the current user is the owner
+  if (req.profile.user.toString() !== req.user.id)
+    return res.status(401).json({ error: 'User not authorized' });
+
+  next();
 };

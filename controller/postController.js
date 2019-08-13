@@ -33,7 +33,7 @@ exports.create = async (req, res) => {
 // @desc    Delete post
 // @access  Private
 exports.remove = async (req, res) => {
-  req.post.remove();
+  await req.post.remove();
   res.json(req.post);
 };
 

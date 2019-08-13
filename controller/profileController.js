@@ -1,83 +1,72 @@
 const Profile = require('../model/profile');
 
-// @route   GET /api/profile
+// @route   GET /api/profiles
 // @desc    Retrieve all profiles
 // @access  Public
 exports.profiles = async (req, res) => {
   const profiles = await Profile.find().populate('user', 'avatar name -_id');
   if (!profiles) return res.status(400).send('No profile saved.');
 
-  res.json(profiles);
+  res.json({ profiles: profiles });
 };
 
-// @route   GET /api/profile/me
-// @desc    current user profile
+// @route   GET /api/profiles/me
+// @pre     Execute in order: isObjectIdValid, isJwtValid and isProfileExists
+// @desc    Current user profile
 // @access  Private
 exports.profile = async (req, res) => {
-  const { id } = req.user;
-  const profile = await Profile.findOne({ user: id }).populate(
-    'user',
-    'avatar name -_id'
-  );
-  if (!profile) return res.status(400).send('No profile for this user.');
-
-  res.json(profile);
+  res.json({ me: req.profile });
 };
 
-// @route   PUT /api/profile/me/experience
+// @route   PUT /api/profiles/me/experience
+// @pre     Execute in order: isJwtValid, isProfileExists, and isValidExperience
 // @desc    Update and add user's profile experience
 // @access  Private
 exports.experience = async (req, res) => {
-  const { id } = req.user;
-  const profile = await Profile.findOneAndUpdate(
-    { user: id },
-    { $push: { experience: req.body } },
-    { new: true }
-  );
+  let { profile } = req;
 
-  res.json(profile);
+  profile.experience.push(req.body);
+  profile = await profile.save();
+  res.json({ me: profile });
 };
 
-// @route   PUT /api/profile/me/experience/:id
+// @route   PUT /api/profiles/me/experience/:id
+// @pre     Execute in order: isObjectIdValid, isProfileExists, isJwtValid, and isValidExperience
 // @desc    Update and remove user's profile experience
 // @access  Private
 exports.removeExperience = async (req, res) => {
-  const profile = await Profile.findOneAndUpdate(
-    { user: req.user.id },
-    { $pull: { experience: { _id: req.params.id } } },
-    { new: true }
-  );
+  let { profile } = req;
 
-  res.json(profile);
+  profile.experience.pull({ _id: req.params.id });
+  profile = await profile.save();
+  res.json({ me: profile });
 };
 
-// @route   PUT /api/profile/me/education
+// @route   PUT /api/profiles/me/education
+// @pre     Execute in order: isJwtValid, isProfileExists, and isValidEducation
 // @desc    Update and add user's profile education
 // @access  Private
 exports.education = async (req, res) => {
-  const profile = await Profile.findOneAndUpdate(
-    { user: req.user.id },
-    { $push: { education: req.body } },
-    { new: true }
-  );
+  let { profile } = req;
 
-  res.json(profile);
+  profile.education.push(req.body);
+  profile = await profile.save();
+  res.json({ me: profile });
 };
 
-// @route   PUT /api/profile/me/education/:id
-// @desc    Update and remove user's profile education
+// @route   PUT /api/profiles/me/education/:id
+// @pre     Execute in order: isObjectIdValid, isProfileExists, isJwtValid, and isValidEducation
 // @access  Private
 exports.removeEducation = async (req, res) => {
-  const profile = await Profile.findOneAndUpdate(
-    { user: req.user.id },
-    { $pull: { education: { _id: req.params.id } } },
-    { new: true }
-  );
+  let { profile } = req;
 
-  res.json(profile);
+  profile.education.pull({ _id: req.params.id });
+  profile = await profile.save();
+  res.json({ me: profile });
 };
 
 // @route   GET /api/user/:id
+// @pre     Execute in order: None
 // @desc    Get user profile by id
 // @access  Public
 exports.profileById = async (req, res) => {
@@ -85,12 +74,16 @@ exports.profileById = async (req, res) => {
     'user',
     'name avatar -_id'
   );
-  if (!profile) return res.status(400).send('No profile for this user.');
+  if (!profile)
+    return res
+      .status(404)
+      .json({ error: `The profile with the given id was not found.` });
 
   res.json(profile);
 };
 
 // @route   GET /api/handle/:handle
+// @pre     Execute in order: None
 // @desc    Get user profile by handle
 // @access  Public
 exports.profileByHandle = async (req, res) => {
@@ -98,29 +91,32 @@ exports.profileByHandle = async (req, res) => {
     'user',
     'name avatar -_id'
   );
-  if (!profile) return res.status(400).send('No profile for this user.');
+  if (!profile)
+    return res
+      .status(400)
+      .json({ error: `The profile with the given handle was not found.` });
 
   res.json(profile);
 };
 
-// @route   DELETE /api/profile
+// @route   DELETE /api/profiles
+// @pre     Execute in order: isProfileExists and isProfileOwner
 // @desc    Delete profile
 // @access  PRIVATE
 exports.remove = async (req, res) => {
-  const profile = await Profile.findOneAndDelete({ user: req.user.id });
-
-  if (!profile) return res.status(400).send('No profile for this user.');
-  res.json(profile);
+  await req.profile.remove();
+  res.json(req.profile);
 };
 
 // @route   POST /api/profile
+// @pre     Execute in order: hasProfile and isBodyValid
 // @desc    Create user profile
 // @access  Private
 exports.create = async (req, res) => {
-  const { id: userId } = req.user;
+  const { id: user } = req.user;
   const { youtube, facebook, twiter, linkedin, instagram, ...rest } = req.body;
   const profile = new Profile({
-    userId,
+    user,
     ...rest,
     social: {
       youtube,
@@ -133,5 +129,5 @@ exports.create = async (req, res) => {
 
   await profile.save();
 
-  res.json(profile);
+  res.json({ me: profile });
 };

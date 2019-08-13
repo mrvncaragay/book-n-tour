@@ -11,33 +11,36 @@ const {
   remove,
   create
 } = require('../controller/profileController');
+
 const { isJwtValid, isObjectIdValid } = require('../middleware/auth');
 const {
-  hasProfile,
   isBodyValid,
   isValidExperience,
-  isValidEducation
+  isValidEducation,
+  isProfileExist,
+  isProfileOwner
 } = require('../middleware/profile');
 
 const router = express.Router();
 
 // Check all route that has parameter /:id or mongoose id is valid
 router.param('id', isObjectIdValid);
+router.param('id', isProfileExist);
 
 // POST DELETE AND PUT must have a valid JWT token
 router
   .route('/*')
-  .post(isJwtValid)
-  .delete(isJwtValid)
-  .put(isJwtValid);
+  .post(isJwtValid, isProfileExist)
+  .delete(isJwtValid, isProfileExist)
+  .put(isJwtValid, isProfileExist);
 
 router
   .route('/')
   .get(profiles)
-  .post(hasProfile, isBodyValid, create)
-  .delete(remove);
+  .post(isBodyValid, create)
+  .delete(isProfileOwner, remove);
 
-router.get('/me', isJwtValid, profile);
+router.get('/me', isJwtValid, isProfileExist, profile);
 router.get('/user/:id', profileById);
 router.get('/handle/:handle', profileByHandle);
 router.put('/me/experience', isValidExperience, experience);

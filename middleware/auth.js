@@ -34,7 +34,7 @@ exports.isJwtValid = (req, res, next) => {
   const jwtToken = req.header('x-auth-token');
 
   if (!jwtToken)
-    return res.status(401).send('Access denied. No token provided.');
+    return res.status(401).json({ error: 'Access denied. No token provided.' });
 
   try {
     const decoded = jwt.verify(jwtToken, process.env.JWT);
@@ -42,7 +42,7 @@ exports.isJwtValid = (req, res, next) => {
 
     next();
   } catch (error) {
-    res.status(400).send('Invalid token.');
+    res.status(400).json({ error: 'Invalid token.' });
   }
 };
 
@@ -51,7 +51,9 @@ exports.isJwtValid = (req, res, next) => {
 exports.isObjectIdValid = (req, res, next) => {
   for (const key in req.params) {
     if (!mongoose.Types.ObjectId.isValid(req.params[key]))
-      return res.status(400).json(`The post with the given ${key} is invalid.`);
+      return res
+        .status(400)
+        .json({ error: `The post with the given ${key} is invalid.` });
   }
 
   next();
