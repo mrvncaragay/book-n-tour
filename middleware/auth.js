@@ -2,6 +2,8 @@ const Joi = require('@hapi/joi');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
+// @desc    Validate login with predefined valid Joi object
+// @return  error object
 const validate = user => {
   const schema = {
     email: Joi.string()
@@ -18,14 +20,15 @@ const validate = user => {
   return Joi.validate(user, schema, { abortEarly: false });
 };
 
+// @desc    validate req.body,
+// @return  next middleware or 400
 exports.isBodyValid = (req, res, next) => {
   const { error } = validate(req.body);
-
   return error ? res.status(400).send(error.details[0].message) : next();
 };
 
 // @desc    validate JWT token, if successful req.user reference the decoded object
-// @result  next middle has access to Current User
+// @result  next middle has access to Current User partial data
 // @return  next middleware
 exports.isJwtValid = (req, res, next) => {
   const jwtToken = req.header('x-auth-token');
@@ -44,10 +47,10 @@ exports.isJwtValid = (req, res, next) => {
 };
 
 // @desc    validate mongoose Id
-// @return  next middleware
+// @return  next middleware if valid
 exports.isObjectIdValid = (req, res, next) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id))
-    res.status(404).send('Invalid Id.');
+    return res.status(404).send('Invalid Id.');
 
   next();
 };
