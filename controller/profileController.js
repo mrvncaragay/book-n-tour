@@ -42,9 +42,8 @@ exports.experience = async (req, res) => {
 // @desc    Update and remove user's profile experience
 // @access  Private
 exports.removeExperience = async (req, res) => {
-  const { id } = req.user;
   const profile = await Profile.findOneAndUpdate(
-    { user: id },
+    { user: req.user.id },
     { $pull: { experience: { _id: req.params.id } } },
     { new: true }
   );
@@ -56,9 +55,8 @@ exports.removeExperience = async (req, res) => {
 // @desc    Update and add user's profile education
 // @access  Private
 exports.education = async (req, res) => {
-  const { id } = req.user;
   const profile = await Profile.findOneAndUpdate(
-    { user: id },
+    { user: req.user.id },
     { $push: { education: req.body } },
     { new: true }
   );
@@ -70,9 +68,8 @@ exports.education = async (req, res) => {
 // @desc    Update and remove user's profile education
 // @access  Private
 exports.removeEducation = async (req, res) => {
-  const { id } = req.user;
   const profile = await Profile.findOneAndUpdate(
-    { user: id },
+    { user: req.user.id },
     { $pull: { education: { _id: req.params.id } } },
     { new: true }
   );
@@ -84,8 +81,7 @@ exports.removeEducation = async (req, res) => {
 // @desc    Get user profile by id
 // @access  Public
 exports.profileById = async (req, res) => {
-  const { id } = req.params;
-  const profile = await Profile.findById(id).populate(
+  const profile = await Profile.findById(req.params.id).populate(
     'user',
     'name avatar -_id'
   );
@@ -98,8 +94,7 @@ exports.profileById = async (req, res) => {
 // @desc    Get user profile by handle
 // @access  Public
 exports.profileByHandle = async (req, res) => {
-  const { handle } = req.params;
-  const profile = await Profile.findOne({ handle: handle }).populate(
+  const profile = await Profile.findOne({ handle: req.params.handle }).populate(
     'user',
     'name avatar -_id'
   );
@@ -112,8 +107,7 @@ exports.profileByHandle = async (req, res) => {
 // @desc    Delete profile
 // @access  PRIVATE
 exports.remove = async (req, res) => {
-  const { id } = req.user;
-  const profile = await Profile.findOneAndDelete({ user: id });
+  const profile = await Profile.findOneAndDelete({ user: req.user.id });
 
   if (!profile) return res.status(400).send('No profile for this user.');
   res.json(profile);

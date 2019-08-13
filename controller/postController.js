@@ -44,3 +44,79 @@ exports.remove = async (req, res) => {
 
   res.json(post);
 };
+
+// @route   PUT /api/posts/like/:id
+// @desc    Like a post
+// @access  Private
+exports.like = async (req, res) => {
+  const likes = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      $addToSet: { likes: req.user.id }
+    },
+    { new: true }
+  ).select('likes -_id');
+  if (!likes)
+    return res.status(404).json('The post with the given ID was not found.');
+
+  res.json(likes);
+};
+
+// @route   PUT /api/posts/unlike/:id
+// @desc    Unlike a post
+// @access  Private
+exports.unlike = async (req, res) => {
+  const likes = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      $pull: { likes: req.user.id }
+    },
+    { new: true }
+  ).select('likes -_id');
+  if (!likes)
+    return res.status(404).json('The post with the given ID was not found.');
+
+  res.json(likes);
+};
+
+// @route   PUT /api/posts/comment/:id
+// @desc    Create a comment
+// @access  Private
+exports.comment = async (req, res) => {
+  const { id: userId, avatar, name } = req.user;
+  const comments = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      $push: {
+        comments: {
+          user: userId,
+          name,
+          avatar,
+          text: req.body.text
+        }
+      }
+    },
+    { new: true }
+  ).select('comments -_id');
+  if (!comments)
+    return res.status(404).json('The post with the given ID was not found.');
+
+  res.json(comments);
+};
+
+// @route   PUT /api/posts/uncomment/:id/:commentId
+// @desc    Remove a comment
+// @access  Private
+exports.uncomment = async (req, res) => {
+  const comments = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      $pull: { comments: { _id: req.params.commentId } }
+    },
+    { new: true }
+  ).select('comments -_id');
+  if (!comments)
+    return res.status(404).json('The post with the given ID was not found.');
+
+  res.json(comments);
+};

@@ -49,8 +49,10 @@ exports.isJwtValid = (req, res, next) => {
 // @desc    validate mongoose Id
 // @return  next middleware if valid
 exports.isObjectIdValid = (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id))
-    return res.status(404).send('Invalid Id.');
+  for (const key in req.params) {
+    if (!mongoose.Types.ObjectId.isValid(req.params[key]))
+      return res.status(404).send('Invalid Id.');
+  }
 
   next();
 };
