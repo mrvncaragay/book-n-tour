@@ -6,7 +6,7 @@ const User = require('../model/user');
 // @desc    Get a all users
 // @access  Public
 exports.getAllUsers = async (req, res) => {
-  const users = await User.find();
+  const users = await User.find().select('-password -__v');
   res.json(users);
 };
 
