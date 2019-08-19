@@ -4,12 +4,12 @@ const Post = require('../model/post');
 const validate = post => {
   const schema = {
     user: Joi.string(),
-    text: Joi.string()
+    text: Joi.string().allow('')
       .min(10)
       .max(300)
       .required(),
-    name: Joi.string(),
-    avatar: Joi.string()
+    name: Joi.string().allow(''),
+    avatar: Joi.string().allow('')
   };
 
   return Joi.validate(post, schema, { abortEarly: false });

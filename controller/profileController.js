@@ -7,15 +7,16 @@ exports.profiles = async (req, res) => {
   const profiles = await Profile.find().populate('user', 'avatar name -_id');
   if (!profiles) return res.status(400).send('No profile saved.');
 
-  res.json({ profiles: profiles });
+  res.json(profiles);
 };
 
 // @route   GET /api/profiles/me
-// @pre     Execute in order: isObjectIdValid, isJwtValid and isProfileExists
+// @pre     Execute in order: isObjectIdValid and isJwtValid
 // @desc    Current user profile
 // @access  Private
 exports.profile = async (req, res) => {
-  res.json({ me: req.profile });
+  const profile = await Profile.findOne({user: req.user.id}).populate('user', 'name avatar');
+  res.json(profile);
 };
 
 // @route   PUT /api/profiles/me/experience
@@ -27,7 +28,7 @@ exports.experience = async (req, res) => {
 
   profile.experience.push(req.body);
   profile = await profile.save();
-  res.json({ me: profile });
+  res.json(profile);
 };
 
 // @route   PUT /api/profiles/me/experience/:id
@@ -39,7 +40,7 @@ exports.removeExperience = async (req, res) => {
 
   profile.experience.pull({ _id: req.params.id });
   profile = await profile.save();
-  res.json({ me: profile });
+  res.json( profile );
 };
 
 // @route   PUT /api/profiles/me/education
@@ -51,7 +52,7 @@ exports.education = async (req, res) => {
 
   profile.education.push(req.body);
   profile = await profile.save();
-  res.json({ me: profile });
+  res.json(profile);
 };
 
 // @route   PUT /api/profiles/me/education/:id
@@ -62,7 +63,7 @@ exports.removeEducation = async (req, res) => {
 
   profile.education.pull({ _id: req.params.id });
   profile = await profile.save();
-  res.json({ me: profile });
+  res.json(profile);
 };
 
 // @route   GET /api/user/:id
@@ -100,7 +101,7 @@ exports.profileByHandle = async (req, res) => {
 };
 
 // @route   DELETE /api/profiles
-// @pre     Execute in order: isProfileExists and isProfileOwner
+// @pre     Execute in order: isJwtValid, isProfileExists and isProfileOwner
 // @desc    Delete profile
 // @access  PRIVATE
 exports.remove = async (req, res) => {
@@ -108,8 +109,8 @@ exports.remove = async (req, res) => {
   res.json(req.profile);
 };
 
-// @route   POST /api/profile
-// @pre     Execute in order: hasProfile and isBodyValid
+// @route   POST /api/profiles
+// @pre     Execute in order: isProfileExist and isBodyValid
 // @desc    Create user profile
 // @access  Private
 exports.create = async (req, res) => {
@@ -129,5 +130,5 @@ exports.create = async (req, res) => {
 
   await profile.save();
 
-  res.json({ me: profile });
+  res.json(profile);
 };

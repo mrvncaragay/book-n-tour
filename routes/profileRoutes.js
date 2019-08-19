@@ -30,7 +30,7 @@ router.param('id', isProfileExist);
 // POST DELETE AND PUT must have a valid JWT token
 router
   .route('/*')
-  .post(isJwtValid, isProfileExist)
+  .post(isJwtValid)
   .delete(isJwtValid, isProfileExist)
   .put(isJwtValid, isProfileExist);
 
@@ -40,7 +40,7 @@ router
   .post(isBodyValid, create)
   .delete(isProfileOwner, remove);
 
-router.get('/me', isJwtValid, isProfileExist, profile);
+router.get('/me', isJwtValid, profile);
 router.get('/user/:id', profileById);
 router.get('/handle/:handle', profileByHandle);
 router.put('/me/experience', isValidExperience, experience);

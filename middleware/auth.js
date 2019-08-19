@@ -10,7 +10,12 @@ const validate = user => {
       .min(5)
       .max(50)
       .required()
-      .email(),
+      .email()
+      .error(error => {
+        return {
+          message: 'Invalid email or password.'
+        };
+      }),
     password: Joi.string()
       .min(3)
       .max(255)
@@ -24,7 +29,7 @@ const validate = user => {
 // @return  next middleware or 400
 exports.isBodyValid = (req, res, next) => {
   const { error } = validate(req.body);
-  return error ? res.status(400).send(error.details[0].message) : next();
+  return error ? res.status(400).json({error: error.details[0].message }) : next();
 };
 
 // @desc    validate JWT token, if successful req.user reference the decoded object

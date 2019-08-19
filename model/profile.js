@@ -22,7 +22,7 @@ const profileSchema = new mongoose.Schema(
       type: String
     },
 
-    locaton: {
+    location: {
       type: String
     },
 

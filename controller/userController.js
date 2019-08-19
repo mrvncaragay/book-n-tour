@@ -27,6 +27,7 @@ exports.create = async (req, res) => {
   await user.save();
 
   res.header('x-auth-token', user.jwtToken).json({
+    id: user._id,
     name: user.name,
     email: user.email,
     avatar: user.avatar

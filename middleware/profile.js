@@ -1,15 +1,15 @@
 const Joi = require('@hapi/joi');
 const Profile = require('../model/profile');
 
-const validate = profile => {
+const validateProfile = profile => {
   const schema = {
     user: Joi.string(),
     handle: Joi.string()
       .max(40)
       .required(),
-    company: Joi.string(),
-    website: Joi.string().uri(),
-    locaton: Joi.string(),
+    company: Joi.string().allow(''),
+    website: Joi.string().uri().allow(''),
+    location: Joi.string().allow(''),
     status: Joi.string()
       .valid(
         'Software Developer',
@@ -20,13 +20,13 @@ const validate = profile => {
       )
       .required(),
     skills: Joi.string().required(),
-    bio: Joi.string(),
-    githubusername: Joi.string(),
-    youtube: Joi.string().uri(),
-    facebook: Joi.string().uri(),
-    twitter: Joi.string().uri(),
-    linkedin: Joi.string().uri(),
-    instagram: Joi.string().uri()
+    bio: Joi.string().allow(''),
+    githubusername: Joi.string().allow(''),
+    youtube: Joi.string().uri().allow(''),
+    facebook: Joi.string().uri().allow(''),
+    twitter: Joi.string().uri().allow(''),
+    linkedin: Joi.string().uri().allow(''),
+    instagram: Joi.string().uri().allow('')
   };
 
   return Joi.validate(profile, schema, { abortEarly: false });
@@ -61,7 +61,8 @@ const validateEducation = education => {
 };
 
 exports.isBodyValid = (req, res, next) => {
-  const { error } = validate(req.body);
+  const { error } = validateProfile(req.body);
+
   return error
     ? res.status(400).json({ error: error.details[0].message })
     : next();
