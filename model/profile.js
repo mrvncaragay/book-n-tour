@@ -5,13 +5,16 @@ const profileSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      required: true,
+      index: true
     },
 
     handle: {
       type: String,
       required: true,
-      maxLength: 40
+      maxLength: 40,
+      unique: true,
+      index: true
     },
 
     company: {

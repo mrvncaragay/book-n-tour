@@ -8,7 +8,9 @@ const validateProfile = profile => {
       .max(40)
       .required(),
     company: Joi.string().allow(''),
-    website: Joi.string().uri().allow(''),
+    website: Joi.string()
+      .uri()
+      .allow(''),
     location: Joi.string().allow(''),
     status: Joi.string()
       .valid(
@@ -22,11 +24,21 @@ const validateProfile = profile => {
     skills: Joi.string().required(),
     bio: Joi.string().allow(''),
     githubusername: Joi.string().allow(''),
-    youtube: Joi.string().uri().allow(''),
-    facebook: Joi.string().uri().allow(''),
-    twitter: Joi.string().uri().allow(''),
-    linkedin: Joi.string().uri().allow(''),
-    instagram: Joi.string().uri().allow('')
+    youtube: Joi.string()
+      .uri()
+      .allow(''),
+    facebook: Joi.string()
+      .uri()
+      .allow(''),
+    twitter: Joi.string()
+      .uri()
+      .allow(''),
+    linkedin: Joi.string()
+      .uri()
+      .allow(''),
+    instagram: Joi.string()
+      .uri()
+      .allow('')
   };
 
   return Joi.validate(profile, schema, { abortEarly: false });
@@ -95,13 +107,5 @@ exports.isProfileExist = async (req, res, next) => {
 
   // Save post reference to req.post
   req.profile = profile;
-  next();
-};
-
-exports.isProfileOwner = (req, res, next) => {
-  // Check if method is DELETE and the current user is the owner
-  if (req.profile.user.toString() !== req.user.id)
-    return res.status(401).json({ error: 'User not authorized' });
-
   next();
 };
