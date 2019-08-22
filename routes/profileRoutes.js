@@ -25,12 +25,13 @@ const router = express.Router();
 // Check all route that has parameter /:id or mongoose id is valid
 router.param('id', isObjectIdValid);
 
-// POST DELETE AND PUT must have a valid JWT token
+// @desc POST DELETE AND PUT must have a valid JWT token
+// @params isJwtValid
 router
   .route('/*')
   .post(isJwtValid)
   .delete(isJwtValid)
-  .put(isJwtValid, isBodyValid);
+  .put(isJwtValid);
 
 router
   .route('/')
@@ -41,7 +42,7 @@ router
 router.get('/me', isJwtValid, profile);
 router.get('/user/:id', profileById);
 router.get('/handle/:handle', profileByHandle);
-router.put('/:id', update);
+router.put('/:id', isBodyValid, update);
 router.put('/me/experience', isValidExperience, experience);
 router.put('/me/experience/:id', removeExperience);
 router.put('/me/education', isValidEducation, education);

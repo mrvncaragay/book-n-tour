@@ -15,31 +15,35 @@ exports.profiles = async (req, res) => {
 // @desc    Current user profile
 // @access  Private
 exports.profile = async (req, res) => {
-  const profile = await Profile.findOne({ user: req.user.id }).populate(
-    'user',
-    'name avatar'
-  );
+  const profile = await Profile.findOne({ user: req.user.id })
+    .lean()
+    .populate('user', 'name avatar');
+
   res.json(profile);
 };
 
 // @route   PUT /api/profiles/me/experience
-// @pre     Execute in order: isJwtValid, isProfileExists, and isValidExperience
+// @pre     Execute in order: isJwtValid and isValidExperience
 // @desc    Update and add user's profile experience
 // @access  Private
 exports.experience = async (req, res) => {
-  const profile = Profile.findOne({ user: req.user.id });
-  if (!profile)
+  const experience = await Profile.findOneAndUpdate(
+    { user: req.user.id },
+    { $push: { experience: { ...req.body } } },
+    { new: true }
+  )
+    .lean()
+    .select('experience -_id');
+  if (!experience)
     return res
       .status(404)
       .json({ error: `The profile with the given id was not found.` });
 
-  profile.experience.push(req.body);
-  await profile.save();
-  res.json(profile);
+  res.json(experience);
 };
 
 // @route   PUT /api/profiles/me/experience/:id
-// @pre     Execute in order: isObjectIdValid, isProfileExists, isJwtValid, and isValidExperience
+// @pre     Execute in order: isObjectIdValid, isJwtValid, and isValidExperience
 // @desc    Update and remove user's profile experience
 // @access  Private
 exports.removeExperience = async (req, res) => {
@@ -178,7 +182,7 @@ exports.update = async (req, res) => {
     req.params.id,
     { ...req.body },
     { new: true }
-  );
+  ).populate('user', 'avatar name _id -_id');
 
   if (!profile)
     return res

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const profileSchema = new mongoose.Schema(
   {
@@ -90,5 +91,22 @@ const profileSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+profileSchema.post(['findOne', 'findOneAndUpdate'], function(result) {
+  //result.createdAt = moment(result.createdAt).fromNow(); // 'A few days ago
+  //result.updatedAt = moment(result.updatedAt).format('MMMM YYYY'); // 'A few days ago
+
+  result.experience = result.experience.map(exp => {
+    if (exp.from) {
+      exp.from = moment(exp.from).format('MMMM YYYY');
+    }
+
+    if (exp.to) {
+      exp.to = moment(exp.to).format('MMMM YYYY');
+    }
+
+    return exp;
+  });
+});
 
 module.exports = mongoose.model('Profile', profileSchema);
