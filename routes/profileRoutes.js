@@ -5,7 +5,8 @@ const {
   addExperience,
   updateExperience,
   removeExperience,
-  education,
+  addEducation,
+  updateEducation,
   removeEducation,
   profileById,
   profileByHandle,
@@ -47,7 +48,8 @@ router.put('/:id', isBodyValid, update);
 router.put('/me/experience', isValidExperience, addExperience);
 router.put('/me/experience/:id', isValidExperience, updateExperience);
 router.put('/me/experience/remove/:id', removeExperience);
-router.put('/me/education', isValidEducation, education);
-router.put('/me/education/:id', isValidExperience, removeEducation);
+router.put('/me/education', isValidEducation, addEducation);
+router.put('/me/education/:id', isValidEducation, updateEducation);
+router.put('/me/education/remove/:id', removeEducation);
 
 module.exports = router;

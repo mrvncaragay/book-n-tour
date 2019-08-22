@@ -71,7 +71,7 @@ const profileSchema = new mongoose.Schema(
       {
         school: { type: String, required: true },
         degree: { type: String, required: true },
-        filedOfStudy: { type: String, required: true },
+        fieldOfStudy: { type: String, required: true },
         from: { type: Date, required: true },
         to: { type: Date, default: '' },
         current: { type: Boolean, default: false },
@@ -97,18 +97,20 @@ const profileSchema = new mongoose.Schema(
  *  @param    none
  *  @return   POJO object
  */
-profileSchema.post(['findOne', 'findOneAndUpdate'], function(result) {
-  result.experience = result.experience.map(exp => {
-    if (exp.from) {
-      exp.from = moment(exp.from).format('MMM YYYY');
-    }
+// profileSchema.post(['findOne', 'findOneAndUpdate'], function(result, next) {
+//   if (result) {
+//     result.experience = result.experience.map(exp => {
+//       if (exp.from) {
+//         exp.from = moment(exp.from).format('MMM YYYY');
+//       }
 
-    if (exp.to) {
-      exp.to = moment(exp.to).format('MMM YYYY');
-    }
+//       if (exp.to) {
+//         exp.to = moment(exp.to).format('MMM YYYY');
+//       }
 
-    return exp;
-  });
-});
+//       return exp;
+//     });
+//   }
+// });
 
 module.exports = mongoose.model('Profile', profileSchema);

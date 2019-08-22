@@ -64,7 +64,7 @@ const validateEducation = education => {
   const schema = {
     school: Joi.string().required(),
     degree: Joi.string().required(),
-    filedOfStudy: Joi.string().required(),
+    fieldOfStudy: Joi.string().required(),
     from: Joi.date().required(),
     to: Joi.date().allow(''),
     current: Joi.string()
@@ -96,20 +96,4 @@ exports.isValidEducation = (req, res, next) => {
   return error
     ? res.status(400).json({ error: error.details[0].message })
     : next();
-};
-
-exports.isProfileExist = async (req, res, next) => {
-  const profile = await Profile.findOne({ user: req.user.id }).populate(
-    'User',
-    'avatar name _id -_id'
-  );
-  // Check if we found a profile
-  if (!profile)
-    return res
-      .status(404)
-      .json({ error: `The profile with the given id was not found.` });
-
-  // Save post reference to req.post
-  req.profile = profile;
-  next();
 };

@@ -66,7 +66,7 @@ exports.updateExperience = async (req, res) => {
 
 // @route   PUT /api/profiles/me/experience/:id
 // @pre     Execute in order: isObjectIdValid, isJwtValid
-// @desc    Remove user's profile experience
+// @desc    Update user's profile experience
 // @access  Private
 exports.removeExperience = async (req, res) => {
   const experience = await Profile.findOneAndUpdate(
@@ -86,34 +86,65 @@ exports.removeExperience = async (req, res) => {
 };
 
 // @route   PUT /api/profiles/me/education
-// @pre     Execute in order: isJwtValid, isProfileExists, and isValidEducation
+// @pre     Execute in order: isJwtValid and isValidEducation
 // @desc    Update and add user's profile education
 // @access  Private
-exports.education = async (req, res) => {
-  const profile = Profile.findOne({ user: req.user.id });
-  if (!profile)
+exports.addEducation = async (req, res) => {
+  const education = await Profile.findOneAndUpdate(
+    { user: req.user.id },
+    { $push: { education: { ...req.body } } },
+    { new: true }
+  )
+    .lean()
+    .select('education -_id');
+  if (!education)
     return res
       .status(404)
       .json({ error: `The profile with the given id was not found.` });
 
-  profile.education.push(req.body);
-  await profile.save();
-  res.json(profile);
+  res.json(education);
 };
 
 // @route   PUT /api/profiles/me/education/:id
-// @pre     Execute in order: isObjectIdValid, isJwtValid, and isValidEducation
+// @pre     Execute in order: isObjectIdValid, isJwtValid, and isValidExperience
+// @desc    Update user's profile education
 // @access  Private
-exports.removeEducation = async (req, res) => {
-  const profile = Profile.findOne({ user: req.user.id });
+exports.updateEducation = async (req, res) => {
+  const profile = await Profile.findOneAndUpdate(
+    { user: req.user.id, 'education._id': req.params.id },
+    { $set: { education: { ...req.body } } },
+    { new: true }
+  )
+    .lean()
+    .select('education -_id');
+
   if (!profile)
     return res
       .status(404)
       .json({ error: `The profile with the given id was not found.` });
 
-  profile.education.pull({ _id: req.params.id });
-  await profile.save();
   res.json(profile);
+};
+
+// @route   PUT /api/profiles/me/education/remove/:id
+// @pre     Execute in order: isObjectIdValid, isJwtValid, and isValidEducation
+// @access  Private
+exports.removeEducation = async (req, res) => {
+  console.log(req.params.id);
+  const education = await Profile.findOneAndUpdate(
+    { user: req.user.id },
+    { $pull: { education: { _id: req.params.id } } },
+    { new: true }
+  )
+    .lean()
+    .select('education -_id');
+
+  if (!education)
+    return res
+      .status(404)
+      .json({ error: `The profile with the given id was not found.` });
+
+  res.json(education);
 };
 
 // @route   GET /api/user/:id
