@@ -26,7 +26,8 @@ exports.profile = async (req, res) => {
 // @pre     Execute in order: isJwtValid and isValidExperience
 // @desc    Update and add user's profile experience
 // @access  Private
-exports.experience = async (req, res) => {
+exports.addExperience = async (req, res) => {
+  // lean - Plain Old Javascript Object (POJO)
   const experience = await Profile.findOneAndUpdate(
     { user: req.user.id },
     { $push: { experience: { ...req.body } } },
@@ -44,18 +45,44 @@ exports.experience = async (req, res) => {
 
 // @route   PUT /api/profiles/me/experience/:id
 // @pre     Execute in order: isObjectIdValid, isJwtValid, and isValidExperience
-// @desc    Update and remove user's profile experience
+// @desc    Update user's profile experience
 // @access  Private
-exports.removeExperience = async (req, res) => {
-  const profile = Profile.findOne({ user: req.user.id });
+exports.updateExperience = async (req, res) => {
+  const profile = await Profile.findOneAndUpdate(
+    { user: req.user.id, 'experience._id': req.params.id },
+    { $set: { experience: { ...req.body } } },
+    { new: true }
+  )
+    .lean()
+    .select('experience -_id');
+
   if (!profile)
     return res
       .status(404)
       .json({ error: `The profile with the given id was not found.` });
 
-  profile.experience.pull({ _id: req.params.id });
-  await profile.save();
   res.json(profile);
+};
+
+// @route   PUT /api/profiles/me/experience/:id
+// @pre     Execute in order: isObjectIdValid, isJwtValid
+// @desc    Remove user's profile experience
+// @access  Private
+exports.removeExperience = async (req, res) => {
+  const experience = await Profile.findOneAndUpdate(
+    { user: req.user.id },
+    { $pull: { experience: { _id: req.params.id } } },
+    { new: true }
+  )
+    .lean()
+    .select('experience -_id');
+
+  if (!experience)
+    return res
+      .status(404)
+      .json({ error: `The profile with the given id was not found.` });
+
+  res.json(experience);
 };
 
 // @route   PUT /api/profiles/me/education

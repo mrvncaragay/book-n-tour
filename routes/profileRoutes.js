@@ -2,9 +2,10 @@ const express = require('express');
 const {
   profiles,
   profile,
-  experience,
-  education,
+  addExperience,
+  updateExperience,
   removeExperience,
+  education,
   removeEducation,
   profileById,
   profileByHandle,
@@ -43,9 +44,10 @@ router.get('/me', isJwtValid, profile);
 router.get('/user/:id', profileById);
 router.get('/handle/:handle', profileByHandle);
 router.put('/:id', isBodyValid, update);
-router.put('/me/experience', isValidExperience, experience);
-router.put('/me/experience/:id', removeExperience);
+router.put('/me/experience', isValidExperience, addExperience);
+router.put('/me/experience/:id', isValidExperience, updateExperience);
+router.put('/me/experience/remove/:id', removeExperience);
 router.put('/me/education', isValidEducation, education);
-router.put('/me/education/:id', removeEducation);
+router.put('/me/education/:id', isValidExperience, removeEducation);
 
 module.exports = router;

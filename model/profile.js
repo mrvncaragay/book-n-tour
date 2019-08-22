@@ -61,7 +61,7 @@ const profileSchema = new mongoose.Schema(
         company: { type: String, required: true },
         location: { type: String },
         from: { type: Date, required: true },
-        to: { type: Date },
+        to: { type: Date, default: '' },
         current: { type: Boolean, default: false },
         description: { type: String }
       }
@@ -73,7 +73,7 @@ const profileSchema = new mongoose.Schema(
         degree: { type: String, required: true },
         filedOfStudy: { type: String, required: true },
         from: { type: Date, required: true },
-        to: { type: Date },
+        to: { type: Date, default: '' },
         current: { type: Boolean, default: false },
         description: { type: String }
       }
@@ -92,17 +92,19 @@ const profileSchema = new mongoose.Schema(
   }
 );
 
+/*
+ *  @desc     Format the experience date after query
+ *  @param    none
+ *  @return   POJO object
+ */
 profileSchema.post(['findOne', 'findOneAndUpdate'], function(result) {
-  //result.createdAt = moment(result.createdAt).fromNow(); // 'A few days ago
-  //result.updatedAt = moment(result.updatedAt).format('MMMM YYYY'); // 'A few days ago
-
   result.experience = result.experience.map(exp => {
     if (exp.from) {
-      exp.from = moment(exp.from).format('MMMM YYYY');
+      exp.from = moment(exp.from).format('MMM YYYY');
     }
 
     if (exp.to) {
-      exp.to = moment(exp.to).format('MMMM YYYY');
+      exp.to = moment(exp.to).format('MMM YYYY');
     }
 
     return exp;
