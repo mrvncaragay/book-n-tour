@@ -1,15 +1,21 @@
 const Joi = require('@hapi/joi');
 const Post = require('../model/post');
+const upload = require('../services/imageUpload');
 
 const validate = post => {
   const schema = {
-    user: Joi.string(),
-    text: Joi.string().allow('')
+    text: Joi.string()
       .min(10)
-      .max(300)
+      .max(600)
       .required(),
-    name: Joi.string().allow(''),
-    avatar: Joi.string().allow('')
+    title: Joi.string()
+      .min(5)
+      .max(100)
+      .required(),
+    subtitle: Joi.string()
+      .min(5)
+      .max(50)
+      .required()
   };
 
   return Joi.validate(post, schema, { abortEarly: false });
@@ -41,4 +47,17 @@ exports.isPostOwner = (req, res, next) => {
     return res.status(401).json({ error: 'User not authorized' });
 
   next();
+};
+
+exports.imageUpload = (req, res, next) => {
+  // For form-datam single image move this to post controller
+  const singleUpload = upload.single('image');
+
+  singleUpload(req, res, err => {
+    if (err) return res.status(400).json({ error: err.message });
+
+    return res.json({ imageUrl: req.file.location });
+  });
+
+  //next
 };

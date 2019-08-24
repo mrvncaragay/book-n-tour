@@ -10,14 +10,13 @@ const {
   uncomment
 } = require('../controller/postController');
 const { isJwtValid, isObjectIdValid } = require('../middleware/auth');
-const { isBodyValid, isPostExist, isPostOwner } = require('../middleware/post');
+const { isBodyValid, isPostOwner, imageUpload } = require('../middleware/post');
 
 const router = express();
 
 // Called this twice instead of writing it multiple times for each route, mutiple param callback is not supported
 // Check all route that has parameter /:id or mongoose id is valid
 router.param('id', isObjectIdValid);
-router.param('id', isPostExist);
 
 // POST DELETE AND PUT must have a valid JWT token
 router
@@ -29,7 +28,7 @@ router
 router
   .route('/')
   .get(posts)
-  .post(isBodyValid, create);
+  .post(imageUpload, isBodyValid, create);
 router
   .route('/:id')
   .get(post)

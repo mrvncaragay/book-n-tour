@@ -23,13 +23,14 @@ exports.posts = async (req, res) => {
 // @desc    Create post
 // @access  Private
 exports.create = async (req, res) => {
-  let post = new Post({
-    user: req.user.id,
-    ...req.body
-  });
+  console.log(req.body);
+  // let post = new Post({
+  //   user: req.user.id,
+  //   ...req.body
+  // });
 
-  post = await post.save();
-  res.json(post);
+  // post = await post.save();
+  res.json({ success: 'okay' });
 };
 
 // @route   DELETE /api/posts/:id
