@@ -1,5 +1,4 @@
 const Joi = require('@hapi/joi');
-const Profile = require('../model/profile');
 
 const validateProfile = profile => {
   const schema = {
@@ -64,7 +63,7 @@ const validateEducation = education => {
   const schema = {
     school: Joi.string().required(),
     degree: Joi.string().required(),
-    fieldOfStudy: Joi.string().required(),
+    fieldOfStudy: Joi.string().allow(''),
     from: Joi.date().required(),
     to: Joi.date().allow(''),
     current: Joi.string()

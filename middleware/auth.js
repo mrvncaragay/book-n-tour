@@ -11,7 +11,7 @@ const validate = user => {
       .max(50)
       .required()
       .email()
-      .error(error => {
+      .error(() => {
         return {
           message: 'Invalid email or password.'
         };

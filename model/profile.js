@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 
 const profileSchema = new mongoose.Schema(
   {
@@ -71,7 +70,7 @@ const profileSchema = new mongoose.Schema(
       {
         school: { type: String, required: true },
         degree: { type: String, required: true },
-        fieldOfStudy: { type: String, required: true },
+        fieldOfStudy: { type: String },
         from: { type: Date, required: true },
         to: { type: Date, default: '' },
         current: { type: Boolean, default: false },

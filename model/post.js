@@ -7,13 +7,26 @@ const postSchema = new mongoose.Schema(
       ref: 'User'
     },
 
+    title: {
+      type: String,
+      required: true
+    },
+
+    subtitle: {
+      type: String,
+      required: true
+    },
+
     text: {
       type: String,
       required: true
     },
 
     name: {
-      type: String
+      type: String,
+      default: function() {
+        return this.user.name;
+      }
     },
 
     avatar: {

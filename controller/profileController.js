@@ -50,7 +50,7 @@ exports.addExperience = async (req, res) => {
 exports.updateExperience = async (req, res) => {
   const profile = await Profile.findOneAndUpdate(
     { user: req.user.id, 'experience._id': req.params.id },
-    { $set: { experience: { ...req.body } } },
+    { $set: { 'experience.$': { ...req.body } } },
     { new: true }
   )
     .lean()
@@ -112,7 +112,7 @@ exports.addEducation = async (req, res) => {
 exports.updateEducation = async (req, res) => {
   const profile = await Profile.findOneAndUpdate(
     { user: req.user.id, 'education._id': req.params.id },
-    { $set: { education: { ...req.body } } },
+    { $set: { 'education.$': { ...req.body } } },
     { new: true }
   )
     .lean()
