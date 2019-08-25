@@ -1,4 +1,5 @@
 const express = require('express');
+
 const {
   post,
   posts,
@@ -10,7 +11,7 @@ const {
   uncomment
 } = require('../controller/postController');
 const { isJwtValid, isObjectIdValid } = require('../middleware/auth');
-const { isBodyValid, isPostOwner, imageUpload } = require('../middleware/post');
+const { imageUpload, isBodyValid, isPostOwner } = require('../middleware/post');
 
 const router = express();
 

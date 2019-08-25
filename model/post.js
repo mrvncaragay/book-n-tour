@@ -22,6 +22,10 @@ const postSchema = new mongoose.Schema(
       required: true
     },
 
+    posturl: {
+      type: String
+    },
+
     name: {
       type: String,
       default: function() {
@@ -30,7 +34,10 @@ const postSchema = new mongoose.Schema(
     },
 
     avatar: {
-      type: String
+      type: String,
+      default: function() {
+        return this.user.avatar;
+      }
     },
 
     likes: [mongoose.Schema.Types.ObjectId],
