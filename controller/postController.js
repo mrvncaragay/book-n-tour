@@ -1,11 +1,19 @@
 const Post = require('../model/post');
 
 // @route   GET /api/posts/:id
-// @pre     Execute in order: isObjectIdValid, isPostExist
+// @pre     Execute in order: isObjectIdValid
 // @desc    Get a single post
 // @access  Public
 exports.post = async (req, res) => {
-  res.json(req.post);
+  const post = await Post.findById(req.params.id, {})
+    .lean()
+    .sort({ 'comments.1[date]': -1 });
+  if (!post)
+    return res
+      .status(404)
+      .json({ error: `The post with the given id was not found.` });
+
+  res.json(post);
 };
 
 // @route   GET /api/posts
@@ -13,8 +21,8 @@ exports.post = async (req, res) => {
 // @desc    Get all posts
 // @access  Public
 exports.posts = async (req, res) => {
-  const posts = await Post.find().sort({ date: -1 });
-  if (posts.length === 0) return res.status(404).json('No posts found.');
+  const posts = await Post.find().sort({ createdAt: -1 });
+
   res.json(posts);
 };
 
@@ -74,32 +82,58 @@ exports.unlike = async (req, res) => {
 };
 
 // @route   PUT /api/posts/comment/:id
-// @pre     Execute in order: isObjectIdValid, isPostExist and isJwtValid
+// @pre     Execute in order: isObjectIdValid and isJwtValid
 // @desc    Create a comment
 // @access  Private
 exports.comment = async (req, res) => {
-  let { post } = req;
-  const { id: userId, avatar, name } = req.user;
-
-  post.comments.push({
-    user: userId,
+  const { id, name, avatar } = req.user;
+  const comment = {
+    user: id,
     name,
     avatar,
     text: req.body.text
-  });
+  };
+  const { comments } = await Post.findByIdAndUpdate(
+    { _id: req.params.id },
+    {
+      $push: {
+        comments: {
+          $each: [comment],
+          $sort: { date: -1 }
+        }
+      }
+    },
+    { new: true }
+  )
+    .lean()
+    .select('comments -_id');
 
-  post = await post.save();
-  res.json({ comments: post.comments });
+  if (!comments)
+    return res
+      .status(404)
+      .json({ error: `The post with the given id was not found.` });
+
+  // Return the newest comment. note: slice is not working...
+  res.json(comments[0]);
 };
 
 // @route   PUT /api/posts/uncomment/:id/:commentId
-// @pre     Execute in order: isObjectIdValid, isPostExist and isJwtValid
+// @pre     Execute in order: isObjectIdValid and isJwtValid
 // @desc    Remove a comment
 // @access  Private
 exports.uncomment = async (req, res) => {
-  let { post } = req;
+  const post = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      $pull: { comments: { _id: req.params.commentId } }
+    },
+    { new: true }
+  ).lean();
 
-  post.comments.pull({ _id: req.params.commentId });
-  post = await post.save();
-  res.json({ comments: post.comments });
+  if (!post)
+    return res
+      .status(404)
+      .json({ error: `The post with the given id was not found.` });
+
+  res.json({ commentId: req.params.commentId });
 };
