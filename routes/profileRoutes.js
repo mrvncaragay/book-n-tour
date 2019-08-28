@@ -38,8 +38,7 @@ router
 router
   .route('/')
   .get(profiles)
-  .post(isBodyValid, create)
-  .delete(remove);
+  .post(isBodyValid, create);
 
 router.get('/me', isJwtValid, profile);
 router.get('/user/:id', profileById);
@@ -51,5 +50,6 @@ router.put('/me/experience/remove/:id', removeExperience);
 router.put('/me/education', isValidEducation, addEducation);
 router.put('/me/education/:id', isValidEducation, updateEducation);
 router.put('/me/education/remove/:id', removeEducation);
+router.delete('/:id', remove);
 
 module.exports = router;

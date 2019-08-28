@@ -62,11 +62,22 @@ exports.remove = async (req, res) => {
 // @desc    Like a post
 // @access  Private
 exports.like = async (req, res) => {
-  let { post } = req;
+  const post = await Post.findByIdAndUpdate(req.params.id, {
+    $addToSet: {
+      likes: req.user.id
+    }
+  });
 
-  post.likes.addToSet(req.user.id);
-  post = await post.save();
-  res.json({ likes: post.user });
+  if (!post)
+    return res
+      .status(404)
+      .json({ error: `The post with the given id was not found.` });
+
+  res.json(req.user.id);
+
+  // post.likes.addToSet(req.user.id);
+  // post = await post.save();
+  // res.json({ likes: post.user });
 };
 
 // @route   PUT /api/posts/unlike/:id
@@ -74,11 +85,18 @@ exports.like = async (req, res) => {
 // @desc    Unlike a post
 // @access  Private
 exports.unlike = async (req, res) => {
-  let { post } = req;
+  const post = await Post.findByIdAndUpdate(req.params.id, {
+    $pull: {
+      likes: req.user.id
+    }
+  });
 
-  post.likes.pull(req.user.id);
-  post = await post.save();
-  res.json({ likes: post.user });
+  if (!post)
+    return res
+      .status(404)
+      .json({ error: `The post with the given id was not found.` });
+
+  res.json(req.user.id);
 };
 
 // @route   PUT /api/posts/comment/:id

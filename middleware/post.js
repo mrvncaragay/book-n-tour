@@ -5,7 +5,7 @@ const validate = post => {
   const schema = {
     text: Joi.string()
       .min(10)
-      .max(600)
+      .max(5000)
       .required(),
     title: Joi.string()
       .min(5)

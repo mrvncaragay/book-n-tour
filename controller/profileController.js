@@ -130,7 +130,6 @@ exports.updateEducation = async (req, res) => {
 // @pre     Execute in order: isObjectIdValid, isJwtValid, and isValidEducation
 // @access  Private
 exports.removeEducation = async (req, res) => {
-  console.log(req.params.id);
   const education = await Profile.findOneAndUpdate(
     { user: req.user.id },
     { $pull: { education: { _id: req.params.id } } },
@@ -147,24 +146,20 @@ exports.removeEducation = async (req, res) => {
   res.json(education);
 };
 
-// @route   GET /api/user/:id
+// @route   GET /api/profiles/user/:id
 // @pre     Execute in order: None
 // @desc    Get user profile by id
 // @access  Public
 exports.profileById = async (req, res) => {
-  const profile = await Profile.findById(req.params.id).populate(
+  const profile = await Profile.findOne({ user: req.params.id }).populate(
     'user',
-    'name avatar -_id'
+    'name avatar'
   );
-  if (!profile)
-    return res
-      .status(404)
-      .json({ error: `The profile with the given id was not found.` });
 
   res.json(profile);
 };
 
-// @route   GET /api/handle/:handle
+// @route   GET /api/profiles/handle/:handle
 // @pre     Execute in order: None
 // @desc    Get user profile by handle
 // @access  Public
@@ -182,17 +177,13 @@ exports.profileByHandle = async (req, res) => {
 };
 
 // @route   DELETE /api/profiles/:id
-// @pre     Execute in order: isJwtValid and isProfileOwner
+// @pre     Execute in order: isJwtValid
 // @desc    Delete profile
 // @access  PRIVATE
 exports.remove = async (req, res) => {
   // Check if profile exist
-  const profile = await Profile.findById(req.params.id).populate(
-    'User',
-    'avatar name _id -_id'
-  );
-  if (!profile)
-    return res.status(403).json({ error: 'Profile already exist.' });
+  const profile = await Profile.findById(req.params.id);
+  if (!profile) return res.status(403).json({ error: 'Profile not found.' });
 
   // Check if method is DELETE and the current user is the owner
   if (profile.user.toString() !== req.user.id)
@@ -200,8 +191,8 @@ exports.remove = async (req, res) => {
       .status(401)
       .json({ error: `The profile with the given id was not found.` });
 
-  await req.profile.remove();
-  res.json(req.profile);
+  await profile.remove();
+  res.json('success');
 };
 
 // @route   POST /api/profiles
@@ -214,7 +205,8 @@ exports.create = async (req, res) => {
 
   const { id: user } = req.user;
   const { youtube, facebook, twiter, linkedin, instagram, ...rest } = req.body;
-  profile = new Profile({
+
+  profile = await Profile.create({
     user,
     ...rest,
     social: {
@@ -226,8 +218,7 @@ exports.create = async (req, res) => {
     }
   });
 
-  await profile.save();
-
+  await profile.populate('user', 'avatar name _id -_id').execPopulate();
   res.json(profile);
 };
 
