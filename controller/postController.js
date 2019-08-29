@@ -21,7 +21,7 @@ exports.post = async (req, res) => {
 exports.posts = async (req, res) => {
   const posts = await Post.find()
     .sort({ createdAt: -1 })
-    .limit(10);
+    .limit(15);
 
   res.json(posts);
 };
@@ -182,4 +182,22 @@ exports.remove = async (req, res) => {
 
   await post.remove();
   res.json(post._id);
+};
+
+// @route   GET /api/posts/paginate
+// @pre     Execute in order:
+// @desc    Pagination request
+// @access  Private
+exports.pagination = async (req, res) => {
+  const { pageNumber, pageSize } = req.query;
+  try {
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip(Number.parseInt(pageNumber - 1, 10) * Number.parseInt(pageSize, 10))
+      .limit(Number.parseInt(pageSize, 10));
+
+    res.json(posts);
+  } catch (error) {
+    console.log(error);
+  }
 };

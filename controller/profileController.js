@@ -216,7 +216,7 @@ exports.create = async (req, res) => {
     }
   });
 
-  await profile.populate('user', 'avatar name _id -_id').execPopulate();
+  await profile.populate('user', 'avatar name _id').execPopulate();
   res.json(profile);
 };
 

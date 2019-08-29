@@ -22,8 +22,27 @@ const validate = post => {
   return Joi.validate(post, schema, { abortEarly: false });
 };
 
+const validateComment = comment => {
+  const schema = {
+    text: Joi.string()
+      .min(10)
+      .max(1000)
+      .required()
+  };
+
+  return Joi.validate(comment, schema, { abortEarly: false });
+};
+
 exports.isBodyValid = (req, res, next) => {
   const { error } = validate(req.body);
+
+  return error
+    ? res.status(400).json({ error: error.details[0].message })
+    : next();
+};
+
+exports.isCommentValid = (req, res, next) => {
+  const { error } = validateComment(req.body);
 
   return error
     ? res.status(400).json({ error: error.details[0].message })

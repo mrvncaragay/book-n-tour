@@ -50,10 +50,9 @@ const validateExperience = experience => {
     location: Joi.string().allow(''),
     from: Joi.date().required(),
     to: Joi.date().allow(''),
-    current: Joi.string()
-      .valid('true', 'false')
-      .allow(''),
-    description: Joi.string().allow('')
+    current: Joi.boolean(),
+    description: Joi.string().allow(''),
+    image: Joi.allow('')
   };
 
   return Joi.validate(experience, schema, { abortEarly: false });
@@ -66,10 +65,9 @@ const validateEducation = education => {
     fieldOfStudy: Joi.string().allow(''),
     from: Joi.date().required(),
     to: Joi.date().allow(''),
-    current: Joi.string()
-      .valid('true', 'false')
-      .allow(''),
-    description: Joi.string().allow('')
+    current: Joi.boolean(),
+    description: Joi.string().allow(''),
+    image: Joi.allow('')
   };
 
   return Joi.validate(education, schema, { abortEarly: false });

@@ -9,10 +9,15 @@ const {
   like,
   unlike,
   comment,
-  uncomment
+  uncomment,
+  pagination
 } = require('../controller/postController');
 const { isJwtValid, isObjectIdValid } = require('../middleware/auth');
-const { imageUpload, isBodyValid } = require('../middleware/post');
+const {
+  imageUpload,
+  isBodyValid,
+  isCommentValid
+} = require('../middleware/post');
 
 const router = express();
 
@@ -31,12 +36,14 @@ router
   .route('/')
   .get(posts)
   .post(imageUpload, isBodyValid, create);
-router.route('/:id').get(post);
+
+router.get('/paginate', pagination);
+router.get('/:id', post);
 
 router.put('/:id', imageUpload, isBodyValid, update);
 router.put('/like/:id', like);
 router.put('/unlike/:id', unlike);
-router.put('/comment/:id', comment);
+router.put('/comment/:id', isCommentValid, comment);
 router.put('/uncomment/:id/:commentId', uncomment);
 router.delete('/:id', remove);
 module.exports = router;
