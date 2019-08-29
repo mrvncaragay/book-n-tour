@@ -187,12 +187,10 @@ exports.remove = async (req, res) => {
 
   // Check if method is DELETE and the current user is the owner
   if (profile.user.toString() !== req.user.id)
-    return res
-      .status(401)
-      .json({ error: `The profile with the given id was not found.` });
+    return res.status(401).json({ error: 'User not authorized' });
 
   await profile.remove();
-  res.json('success');
+  res.json(profile._id);
 };
 
 // @route   POST /api/profiles

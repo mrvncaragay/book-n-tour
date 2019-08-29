@@ -5,9 +5,7 @@ const Post = require('../model/post');
 // @desc    Get a single post
 // @access  Public
 exports.post = async (req, res) => {
-  const post = await Post.findById(req.params.id, {})
-    .lean()
-    .sort({ 'comments.1[date]': -1 });
+  const post = await Post.findById(req.params.id).lean();
   if (!post)
     return res
       .status(404)
@@ -21,7 +19,9 @@ exports.post = async (req, res) => {
 // @desc    Get all posts
 // @access  Public
 exports.posts = async (req, res) => {
-  const posts = await Post.find().sort({ createdAt: -1 });
+  const posts = await Post.find()
+    .sort({ createdAt: -1 })
+    .limit(10);
 
   res.json(posts);
 };
@@ -48,15 +48,6 @@ exports.create = async (req, res) => {
   res.json(post);
 };
 
-// @route   DELETE /api/posts/:id
-// @pre     Execute in order: isObjectIdValid, isPostExist and isPostOwner
-// @desc    Delete post
-// @access  Private
-exports.remove = async (req, res) => {
-  await req.post.remove();
-  res.json(req.post);
-};
-
 // @route   PUT /api/posts/like/:id
 // @pre     Execute in order: isObjectIdValid, isPostExist and isJwtValid
 // @desc    Like a post
@@ -74,10 +65,6 @@ exports.like = async (req, res) => {
       .json({ error: `The post with the given id was not found.` });
 
   res.json(req.user.id);
-
-  // post.likes.addToSet(req.user.id);
-  // post = await post.save();
-  // res.json({ likes: post.user });
 };
 
 // @route   PUT /api/posts/unlike/:id
@@ -154,4 +141,45 @@ exports.uncomment = async (req, res) => {
       .json({ error: `The post with the given id was not found.` });
 
   res.json({ commentId: req.params.commentId });
+};
+
+// @route   PUT /api/posts/:id
+// @pre     Execute in order: isJwtValid and isBodyValid
+// @desc    Update user post
+// @access  Private
+exports.update = async (req, res) => {
+  const posturl = req.file ? req.file.location : req.body.posturl;
+
+  const post = await Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      ...req.body,
+      posturl
+    },
+    { new: true }
+  ).select('title subtitle text posturl -_id');
+
+  if (!post)
+    return res
+      .status(404)
+      .json({ error: `The post with the given id was not found.` });
+
+  res.json(post);
+};
+
+// @route   DELETE /api/posts/:id
+// @pre     Execute in order: isObjectIdValid
+// @desc    DElete a single post
+// @access  Private
+exports.remove = async (req, res) => {
+  // Check if profile exist
+  const post = await Post.findById(req.params.id);
+  if (!post) return res.status(403).json({ error: 'Post not found.' });
+
+  // Check if method is DELETE and the current user is the owner
+  if (post.user.toString() !== req.user.id)
+    return res.status(401).json({ error: 'User not authorized' });
+
+  await post.remove();
+  res.json(post._id);
 };

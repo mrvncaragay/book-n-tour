@@ -15,6 +15,7 @@ const validate = post => {
       .min(5)
       .max(100)
       .required(),
+    posturl: Joi.allow(''),
     image: Joi.allow('')
   };
 
@@ -27,14 +28,6 @@ exports.isBodyValid = (req, res, next) => {
   return error
     ? res.status(400).json({ error: error.details[0].message })
     : next();
-};
-
-exports.isPostOwner = (req, res, next) => {
-  // Check if method is DELETE and the current user is the owner
-  if (req.post.user.toString() !== req.user.id)
-    return res.status(401).json({ error: 'User not authorized' });
-
-  next();
 };
 
 exports.imageUpload = (req, res, next) => {
