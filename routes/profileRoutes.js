@@ -12,7 +12,8 @@ const {
   profileByHandle,
   remove,
   create,
-  update
+  update,
+  pagination
 } = require('../controller/profileController');
 
 const { isJwtValid, isObjectIdValid } = require('../middleware/auth');
@@ -40,6 +41,7 @@ router
   .get(profiles)
   .post(isBodyValid, create);
 
+router.get('/paginate', pagination);
 router.get('/me', isJwtValid, profile);
 router.get('/user/:id', profileById);
 router.get('/handle/:handle', profileByHandle);

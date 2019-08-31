@@ -4,7 +4,11 @@ const Profile = require('../model/profile');
 // @desc    Retrieve all profiles
 // @access  Public
 exports.profiles = async (req, res) => {
-  const profiles = await Profile.find().populate('user', 'avatar name -_id');
+  const profiles = await Profile.find()
+    .sort({ createdAt: -1 })
+    .limit(9)
+    .populate('user', 'avatar name')
+    .select('user status skills');
   if (!profiles) return res.status(400).send('No profile saved.');
 
   res.json(profiles);
@@ -229,7 +233,7 @@ exports.update = async (req, res) => {
     req.params.id,
     { ...req.body },
     { new: true }
-  ).populate('user', 'avatar name _id -_id');
+  ).populate('user', 'avatar name _id');
 
   if (!profile)
     return res
@@ -237,4 +241,24 @@ exports.update = async (req, res) => {
       .json({ error: `The profile with the given id was not found.` });
 
   res.json(profile);
+};
+
+// @route   GET /api/profiles/paginate
+// @pre     Execute in order:
+// @desc    Pagination request
+// @access  Private
+exports.pagination = async (req, res) => {
+  const { pageNumber, pageSize } = req.query;
+  try {
+    const profiles = await Profile.find()
+      .sort({ createdAt: -1 })
+      .skip(Number.parseInt(pageNumber - 1, 10) * Number.parseInt(pageSize, 10))
+      .limit(Number.parseInt(pageSize, 10))
+      .populate('user', 'avatar name')
+      .select('user status skills');
+
+    res.json(profiles);
+  } catch (error) {
+    console.log(error);
+  }
 };

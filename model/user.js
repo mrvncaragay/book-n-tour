@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default: function() {
-        return gravatar.url(this.email, { s: '200', r: 'pg', d: 'mp' });
+        return gravatar.url(this.email, { s: '200', r: 'pg', d: 'identicon' });
       }
     }
   },
